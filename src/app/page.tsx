@@ -8,402 +8,327 @@ import {
   Code2,
   GraduationCap,
   Sparkles,
-  Github,
 } from "lucide-react";
 
 const projetos = [
   {
-    semestre: "01",
-    periodo: "4º semestre",
-    titulo: "Trabalho Claudio",
-    categoria: "Engenharia de Software e UML",
+    numero: "01",
+    nome: "Trabalho Claudio",
+    categoria: "Engenharia de Software",
     descricao:
-      "Projeto acadêmico voltado à análise, modelagem e documentação de sistemas, utilizando conceitos de Engenharia de Software e diagramas UML.",
+      "Projeto acadêmico voltado aos conceitos de Engenharia de Software, com foco na modelagem e documentação de sistemas utilizando diagramas UML.",
     tecnologias: ["Engenharia de Software", "UML"],
-    imagem:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80",
     link: "https://github.com/WesleyCotrim/trabalho-claudio",
-  },
-  {
-    semestre: "02",
-    periodo: "4º semestre",
-    titulo: "Cine Nova",
-    categoria: "Padrões Criacionais",
-    descricao:
-      "Projeto experimental desenvolvido para identificar cenários de aplicação e implementar os cinco padrões criacionais de projeto. Não tem como objetivo representar um sistema real de cinema.",
-    tecnologias: ["TypeScript", "NestJS", "Design Patterns"],
     imagem:
-      "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1000&q=80",
-    link: "https://github.com/WesleyCotrim/cine-nova",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200",
   },
   {
-    semestre: "03",
-    periodo: "4º semestre",
-    titulo: "Confere",
+    numero: "02",
+    nome: "Cine Nova",
+    categoria: "Padrões de Projeto",
+    descricao:
+      "Projeto experimental desenvolvido para identificar e implementar os cinco padrões de projeto criacionais, explorando suas aplicações na organização e criação de objetos.",
+    tecnologias: ["TypeScript", "NestJS", "Design Patterns"],
+    link: "https://github.com/WesleyCotrim/cine-nova",
+    imagem:
+      "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200",
+  },
+  {
+    numero: "03",
+    nome: "Confere",
     categoria: "Desenvolvimento Web",
     descricao:
-      "Sistema web acadêmico para gerenciamento de conferências e produtores, trabalhando organização de informações e funcionalidades de uma aplicação web.",
+      "Aplicação web desenvolvida para auxiliar no gerenciamento de conferências e produtores, reunindo funcionalidades para organizar informações e facilitar a administração.",
     tecnologias: ["HTML", "CSS", "JavaScript", "Supabase"],
-    imagem:
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1000&q=80",
     link: "https://github.com/WesleyCotrim/confere-",
+    imagem:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200",
   },
   {
-    semestre: "04",
-    periodo: "4º semestre",
-    titulo: "Trabalho de Padrões de Projeto",
-    categoria: "Arquitetura de Software",
+    numero: "04",
+    nome: "Trabalho de Padrões de Projeto",
+    categoria: "Design Patterns",
     descricao:
-      "Implementação e demonstração de cinco padrões criacionais em um contexto de sistema de streaming, explorando soluções para criação de objetos e organização do código.",
+      "Implementação dos cinco padrões de projeto criacionais em um contexto de sistema de streaming, aplicando conceitos de reutilização, organização e flexibilidade do código.",
     tecnologias: ["TypeScript", "Node.js", "Design Patterns"],
-    imagem:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
     link: "https://github.com/WesleyCotrim/trabalho-padroes-projeto",
+    imagem:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
   },
 ];
 
-function calcularTempo(dataAlvo: number, agora: number) {
-  const diferenca = Math.max(0, dataAlvo - agora);
-
-  const segundo = 1000;
-  const minuto = segundo * 60;
-  const hora = minuto * 60;
-  const dia = hora * 24;
-
-  return {
-    dias: Math.floor(diferenca / dia),
-    horas: Math.floor((diferenca % dia) / hora),
-    minutos: Math.floor((diferenca % hora) / minuto),
-    segundos: Math.floor((diferenca % minuto) / segundo),
-  };
+function formatarTempo(valor: number) {
+  return String(valor).padStart(2, "0");
 }
 
 export default function Home() {
-  const [agora, setAgora] = useState<number | null>(null);
+  const [tempo, setTempo] = useState({
+    dias: 0,
+    horas: 0,
+    minutos: 0,
+    segundos: 0,
+  });
 
   useEffect(() => {
-    setAgora(Date.now());
+    const dataFinal = new Date(
+      process.env.NEXT_PUBLIC_SEMESTER_END ||
+        "2026-12-18T23:59:59-03:00"
+    ).getTime();
 
-    const intervalo = window.setInterval(() => {
-      setAgora(Date.now());
-    }, 1000);
+    function atualizarContador() {
+      const agora = new Date().getTime();
+      const diferenca = Math.max(0, dataFinal - agora);
 
-    return () => window.clearInterval(intervalo);
+      setTempo({
+        dias: Math.floor(diferenca / (1000 * 60 * 60 * 24)),
+        horas: Math.floor(
+          (diferenca / (1000 * 60 * 60)) % 24
+        ),
+        minutos: Math.floor((diferenca / (1000 * 60)) % 60),
+        segundos: Math.floor((diferenca / 1000) % 60),
+      });
+    }
+
+    atualizarContador();
+
+    const intervalo = setInterval(atualizarContador, 1000);
+
+    return () => clearInterval(intervalo);
   }, []);
-
-  const dataConfigurada =
-    process.env.NEXT_PUBLIC_SEMESTER_END ||
-    "2026-12-18T23:59:59-03:00";
-
-  const dataAlvo = new Date(dataConfigurada).getTime();
-
-  const tempo = calcularTempo(dataAlvo, agora ?? Date.now());
-
-  const terminou = agora !== null && agora >= dataAlvo;
 
   return (
     <main>
-      {/* NAVEGAÇÃO */}
-      <nav className="nav">
-        <a className="marca" href="#">
-          <span className="marca-icone">
-            <GraduationCap size={21} />
-          </span>
-          <span>
-            Minha jornada<span className="ponto">.</span>
-          </span>
+      <nav className="navbar">
+        <a href="#" className="logo">
+          <span className="logo-simbolo">W.</span>
+          <span>PORTFÓLIO</span>
         </a>
 
         <div className="nav-links">
-          <a href="#contagem">Contagem regressiva</a>
+          <a href="#inicio">Início</a>
           <a href="#projetos">Projetos</a>
           <a href="#sobre">Sobre mim</a>
         </div>
 
         <a
-          className="nav-botao"
           href="https://github.com/WesleyCotrim"
           target="_blank"
           rel="noopener noreferrer"
+          className="nav-github"
         >
           GitHub <ArrowUpRight size={16} />
         </a>
       </nav>
 
-      {/* APRESENTAÇÃO */}
-      <section className="hero">
+      <section className="hero" id="inicio">
         <div className="hero-conteudo">
           <div className="etiqueta">
-            <span className="status-ponto" />
-            UM SEMESTRE DE CADA VEZ
+            <span className="ponto"></span>
+            PORTFÓLIO ACADÊMICO
           </div>
 
           <h1>
-            Aprender.
+            Transformando
             <br />
-            Construir.
-            <br />
-            <span>Evoluir.</span>
+            ideias em <span>projetos.</span>
           </h1>
 
           <p className="hero-descricao">
-            Cada semestre é um novo capítulo. Aqui registro minha
-            jornada acadêmica, os projetos que desenvolvi e tudo
-            o que ainda quero conquistar.
+            Uma jornada de aprendizado, desenvolvimento e
+            descobertas através da tecnologia. Aqui registro
+            minha evolução acadêmica e os projetos que fazem
+            parte dessa trajetória.
           </p>
 
-          <a className="botao-principal" href="#projetos">
-            Conheça meus projetos <ArrowUpRight size={18} />
-          </a>
+          <div className="hero-botoes">
+            <a href="#projetos" className="botao-principal">
+              Explorar projetos <ArrowDown size={18} />
+            </a>
 
-          <a className="link-scroll" href="#contagem">
-            <ArrowDown size={15} />
-            Continue explorando
-          </a>
-        </div>
-
-        <div className="hero-visual">
-          <div className="foto-principal">
-            <img
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85"
-              alt="Mesa de trabalho com computador e ambiente de programação"
-            />
+            <a
+              href="https://github.com/WesleyCotrim"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="botao-secundario"
+            >
+              Meu GitHub <ArrowUpRight size={18} />
+            </a>
           </div>
+        </div>
 
-          <div className="cartao-flutuante">
-            <div className="cartao-icone">
-              <Sparkles size={18} />
-            </div>
-
-            <div>
-              <strong>Em constante evolução</strong>
-              <span>Um projeto de cada vez.</span>
-            </div>
+        <div className="hero-decoracao">
+          <div className="decoracao-card">
+            <Code2 size={38} strokeWidth={1.4} />
+            <span>CODIFICANDO O FUTURO</span>
+            <strong>const journey = "evolution";</strong>
           </div>
-
-          <div className="numero-decorativo">01 — 04</div>
+          <div className="decoracao-circulo circulo-um"></div>
+          <div className="decoracao-circulo circulo-dois"></div>
         </div>
 
-        <div className="hero-rodape">
-          <span>PORTFÓLIO ACADÊMICO</span>
-          <span>MINHA HISTÓRIA EM CONSTRUÇÃO © 2026</span>
-        </div>
+        <a href="#contador" className="hero-scroll">
+          ROLE PARA EXPLORAR <ArrowDown size={14} />
+        </a>
       </section>
 
-      {/* CONTAGEM REGRESSIVA */}
-      <section className="contagem secao" id="contagem">
-        <div className="secao-cabecalho">
-          <div>
-            <span className="sobretitulo">
-              O TEMPO ESTÁ PASSANDO
-            </span>
-
-            <h2>
-              O próximo capítulo
-              <br />
-              está chegando<span className="ponto">.</span>
-            </h2>
+      <section className="contador-section" id="contador">
+        <div className="contador-texto">
+          <div className="etiqueta">
+            <Sparkles size={14} />
+            CONTAGEM REGRESSIVA
           </div>
 
-          <p className="cabecalho-descricao">
-            Cada segundo é uma oportunidade para aprender algo
-            novo e chegar mais perto dos meus objetivos.
+          <h2>
+            O semestre está
+            <br />
+            chegando ao fim.
+          </h2>
+
+          <p>
+            Cada dia é uma nova oportunidade de aprender,
+            desenvolver e evoluir.
           </p>
         </div>
 
         <div className="contador">
           {[
-            { valor: tempo.dias, rotulo: "DIAS" },
-            { valor: tempo.horas, rotulo: "HORAS" },
-            { valor: tempo.minutos, rotulo: "MINUTOS" },
-            { valor: tempo.segundos, rotulo: "SEGUNDOS" },
+            { valor: tempo.dias, legenda: "DIAS" },
+            { valor: tempo.horas, legenda: "HORAS" },
+            { valor: tempo.minutos, legenda: "MINUTOS" },
+            { valor: tempo.segundos, legenda: "SEGUNDOS" },
           ].map((item) => (
-            <div className="contador-item" key={item.rotulo}>
-              <span className="contador-numero">
-                {String(item.valor).padStart(2, "0")}
-              </span>
-
-              <span className="contador-rotulo">
-                {item.rotulo}
-              </span>
+            <div className="contador-item" key={item.legenda}>
+              <strong>{formatarTempo(item.valor)}</strong>
+              <span>{item.legenda}</span>
             </div>
           ))}
         </div>
-
-        <div className="contador-rodape">
-          <span className="contador-status">
-            <span className="status-ponto" />
-
-            {agora === null
-              ? "Calculando..."
-              : terminou
-                ? "O semestre chegou ao fim!"
-                : "Contagem regressiva em andamento"}
-          </span>
-
-          <span>
-            Término previsto:{" "}
-            {new Date(dataAlvo).toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-              timeZone: "America/Sao_Paulo",
-            })}
-          </span>
-        </div>
       </section>
 
-      {/* PROJETOS */}
-      <section className="projetos secao" id="projetos">
-        <div className="secao-cabecalho">
+      <section className="projetos-section" id="projetos">
+        <div className="secao-introducao">
           <div>
-            <span className="sobretitulo">
+            <div className="etiqueta">
+              <GraduationCap size={15} />
               MINHA TRAJETÓRIA
-            </span>
+            </div>
 
             <h2>
               Projetos que contam
               <br />
-              minha história<span className="ponto">.</span>
+              <span>minha evolução.</span>
             </h2>
           </div>
 
-          <p className="cabecalho-descricao">
-            Trabalhos desenvolvidos durante minha formação,
-            desafios que enfrentei e conhecimentos que coloquei
-            em prática.
+          <p>
+            Uma coleção de trabalhos desenvolvidos durante
+            minha formação acadêmica, representando desafios,
+            experiências e conhecimentos adquiridos.
           </p>
         </div>
 
-        {/* IDENTIFICAÇÃO DO SEMESTRE */}
         <div className="semestre-cabecalho">
           <div className="semestre-numero">04</div>
 
           <div>
-            <span className="sobretitulo">
-              MINHA EVOLUÇÃO ACADÊMICA
-            </span>
+            <span>FORMAÇÃO ACADÊMICA</span>
             <h3>4º Semestre</h3>
-            <p>Quatro projetos desenvolvidos durante esta etapa.</p>
+            <p>Projetos desenvolvidos durante o quarto semestre.</p>
           </div>
+
+          <span className="semestre-status">4 PROJETOS</span>
         </div>
 
-        {/* CARDS DOS PROJETOS */}
-        <div className="linha-tempo">
+        <div className="projetos-grid">
           {projetos.map((projeto) => (
-            <article className="projeto" key={projeto.semestre}>
-              <div className="projeto-marcador">
-                <span>{projeto.semestre}</span>
+            <article className="projeto-card" key={projeto.numero}>
+              <div className="projeto-imagem">
+                <img
+                  src={projeto.imagem}
+                  alt={`Imagem ilustrativa do projeto ${projeto.nome}`}
+                />
+                <span className="projeto-numero">
+                  {projeto.numero}
+                </span>
+                <span className="projeto-categoria">
+                  {projeto.categoria}
+                </span>
               </div>
 
-              <div className="projeto-card">
-                <div className="projeto-imagem">
-                  <img
-                    src={projeto.imagem}
-                    alt={projeto.titulo}
-                    loading="lazy"
-                  />
+              <div className="projeto-conteudo">
+                <h3>{projeto.nome}</h3>
 
-                  <span className="projeto-periodo">
-                    {projeto.periodo}
-                  </span>
+                <p>{projeto.descricao}</p>
+
+                <div className="tecnologias">
+                  {projeto.tecnologias.map((tecnologia) => (
+                    <span key={tecnologia}>{tecnologia}</span>
+                  ))}
                 </div>
 
-                <div className="projeto-info">
-                  <span className="projeto-categoria">
-                    {projeto.categoria}
-                  </span>
-
-                  <h3>{projeto.titulo}</h3>
-
-                  <p>{projeto.descricao}</p>
-
-                  <div className="tecnologias">
-                    {projeto.tecnologias.map((tecnologia) => (
-                      <span key={tecnologia}>
-                        {tecnologia}
-                      </span>
-                    ))}
-                  </div>
-
-                  <a
-                    className="projeto-link"
-                    href={projeto.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Github size={15} />
-                    Ver projeto no GitHub
-                    <ArrowUpRight size={15} />
-                  </a>
-                </div>
+                <a
+                  href={projeto.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="projeto-link"
+                >
+                  Ver projeto no GitHub
+                  <ArrowUpRight size={17} />
+                </a>
               </div>
             </article>
           ))}
         </div>
-
-        <p className="aviso-projetos">
-          Projetos acadêmicos desenvolvidos durante o 4º semestre
-          da minha formação.
-        </p>
-
-        <a
-          className="botao-principal github-geral"
-          href="https://github.com/WesleyCotrim"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Ver todos os repositórios <Github size={17} />
-        </a>
       </section>
 
-      {/* SOBRE */}
-      <section className="sobre secao" id="sobre">
+      <section className="sobre-section" id="sobre">
         <div className="sobre-icone">
-          <Code2 size={28} />
+          <GraduationCap size={36} />
         </div>
 
-        <span className="sobretitulo">ALÉM DO CÓDIGO</span>
+        <div className="sobre-conteudo">
+          <div className="etiqueta">UM POUCO SOBRE MIM</div>
 
-        <h2>
-          O melhor projeto
-          <br />
-          é quem estou me tornando<span className="ponto">.</span>
-        </h2>
+          <h2>
+            Aprender, construir
+            <br />
+            e <span>evoluir.</span>
+          </h2>
 
-        <p>
-          Este portfólio é um registro da minha evolução.
-          Cada experiência, erro e descoberta faz parte da
-          construção do profissional que quero ser.
-        </p>
+          <p>
+            Este portfólio representa parte da minha jornada
+            acadêmica na área de tecnologia. Cada projeto é uma
+            oportunidade de colocar conhecimentos em prática,
+            experimentar novas soluções e desenvolver minhas
+            habilidades como profissional.
+          </p>
+
+          <a
+            href="https://github.com/WesleyCotrim"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="botao-principal"
+          >
+            Conheça meu GitHub <ArrowUpRight size={18} />
+          </a>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <a href="#" className="logo">
+          <span className="logo-simbolo">W.</span>
+          <span>PORTFÓLIO</span>
+        </a>
+
+        <p>Desenvolvido com dedicação e muito aprendizado.</p>
 
         <a
-          className="botao-principal"
           href="https://github.com/WesleyCotrim"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Conheça meu GitHub <Github size={17} />
+          GitHub <ArrowUpRight size={15} />
         </a>
-      </section>
-
-      {/* RODAPÉ */}
-      <footer className="footer">
-        <a className="marca" href="#">
-          <span className="marca-icone">
-            <GraduationCap size={21} />
-          </span>
-
-          <span>
-            Minha jornada<span className="ponto">.</span>
-          </span>
-        </a>
-
-        <span>
-          Feito com dedicação, um semestre de cada vez.
-        </span>
-
-        <a href="#">Voltar ao topo ↑</a>
       </footer>
     </main>
   );
